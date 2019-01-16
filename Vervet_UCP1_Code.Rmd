@@ -4,29 +4,222 @@ author: "Christian Gagnon"
 date: "1/6/2019"
 output: html_document
 ---
-
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## R Markdown
+## R Markdown for Chlorocebus pygerythrus
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+##Hardy-Weinberg Equilibrium
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+#Packages
+```{r}
+install.packages("vcfR")
+install.packages("pegas")
 
-```{r cars}
-summary(cars)
+library(vcfR)
+library(pegas)
 ```
 
-## Including Plots
-
-You can also embed plots, for example:
-
-```{r pressure, echo=FALSE}
-plot(pressure)
+#Output
+```{r}
+ALL <- read.vcfR("pyg_UCP1.vcf.gz", verbose = TRUE)
+pegas.ALL <- vcfR2genind(ALL, sep = "[|/]")
+HWE <- hw.test(pegas.ALL, B = 0)
+HWE
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+##Linkage Disequilibrium
 
-hey
+#Packages
+```{r}
+install.packages("LDheatmap")
+install.packages("snpStats")
+
+library(snpStats)
+library(VariantAnnotation)
+library(LDheatmap)
+```
+
+```{r}
+vcfbig <- readVcf("pyg_UCP1.vcf.gz", "hg19")
+ALLmatrix <- genotypeToSnpMatrix(vcfbig)
+ALLmatrix
+
+LD <- ld(ALLmatrix$genotypes, depth = 200, stats = "R.squared")
+head(LD)
+LD
+```
+
+
+```{r}
+cols = colorRampPalette(c("yellow", "red"))(10)
+image(LD, lwd = 0, cuts= 9, col.regions=cols, colorkey=TRUE)
+positions <- c(87492144, 87492145, 87492201, 87492261, 87492339, 
+               87492384, 87492403, 87492424, 87492537, 87492563, 
+               87492569, 87492579, 87492612, 87492667, 87492739, 
+               87492801, 87492842, 87492898, 87492907, 87492922, 
+               87492949, 87492998, 87493023, 87493031, 87493125, 
+               87493148, 87493153, 87493215, 87493237, 87493263, 
+               87493283, 87493291, 87493379, 87493469, 87493472, 
+               87493519, 87493569, 87493613, 87493664, 87493744, 
+               87493753, 87493830, 87493837, 87493854, 87493882, 
+               87493885, 87493888, 87493967, 87493997, 87494045, 
+               87494126, 87494157, 87494177, 87494188, 87494216, 
+               87494226, 87494338, 87494339, 87494341, 87494342, 
+               87494406, 87494423, 87494503, 87494508, 87494576, 
+               87494632, 87494638, 87494674, 87494842, 87494859, 
+               87494861, 87494916, 87495040, 87495094, 87495117, 
+               87495209, 87495213, 87495244, 87495288, 87495371, 
+               87495400, 87495483, 87495511, 87495557, 87495566, 
+               87495638, 87495673, 87495675, 87495720, 87495756, 
+               87495918, 87496052, 87496059, 87496184, 87496254, 
+               87496359, 87496412, 87496425, 87496460, 87496622, 
+               87496650, 87496753, 87496822, 87496860, 87496865, 
+               87496877, 87496889, 87496897, 87496950, 87496956, 
+               87496971, 87497024, 87497044, 87497047, 87497115, 
+               87497190, 87497200, 87497259, 87497358, 87497419, 
+               87497423, 87497427, 87497467, 87497483, 87497539, 
+               87497546, 87497583, 87497753, 87497809, 87497815, 
+               87497848, 87497910, 87497920, 87498023, 87498068, 
+               87498167, 87498192, 87498326, 87498342, 87498397, 
+               87498450, 87498470, 87498487, 87498501, 87498511, 
+               87498532, 87498564, 87498575, 87498578, 87498611, 
+               87498614, 87498628, 87498633, 87498652, 87498662, 
+               87498678, 87498681, 87498695, 87498769, 87498903, 
+               87498904, 87498981, 87499037, 87499064, 87499099, 
+               87499115, 87499116, 87499128, 87499152, 87499154, 
+               87499168, 87499175, 87499179, 87499180, 87499205, 
+               87499292, 87499295, 87499303, 87499326, 87499356, 
+               87499382, 87499434, 87499439, 87499443, 87499459, 
+               87499485, 87499618, 87499641, 87499761, 87499800, 
+               87499801, 87499818, 87499828, 87499840, 87499854, 
+               87499902, 87500036, 87500045, 87500110, 87500111, 
+               87500152, 87500233, 87500305, 87500306, 87500313, 
+               87500323, 87500325, 87500408, 87500413, 87500454, 
+               87500458, 87500545, 87500558, 87500605, 87500606, 
+               87500611, 87500623, 87500632, 87500650, 87500651, 
+               87500686, 87500780, 87500821, 87500871, 87500927, 
+               87500934, 87500935, 87500951, 87500984, 87501102, 
+               87501183, 87501221, 87501233, 87501339, 87501420, 
+               87501475, 87501486, 87501513, 87501527, 87501535, 
+               87501560, 87501581, 87501599, 87501638, 87501662, 
+               87501699, 87501756, 87501805, 87501834, 87501898, 
+               87501903, 87501904, 87501910, 87501922, 87501946, 
+               87501948, 87501955, 87501974, 87501983, 87502069, 
+               87502083, 87502085, 87502127, 87502141, 87502149, 
+               87502154, 87502235, 87502245, 87502246, 87502255, 
+               87502264, 87502276, 87502281, 87502305, 87502325, 
+               87502347, 87502374, 87502418, 87502422, 87502428, 
+               87502449, 87502469, 87502477, 87502481, 87502522)
+
+allheatmapr <- LDheatmap(ALLmatrix$genotypes,
+                           genetic.distances=positions,
+                           distances="physical",
+                           LDmeasure="r",
+                           title="Pairwise LD with R^2",
+                           add.map=TRUE, add.key=TRUE,
+                           geneMapLocation=0.15,
+                           SNP.name=c("87493148"),
+                           color=NULL, newpage=TRUE,
+                           name="ldheatmap")
+
+allheatmapD <- LDheatmap(ALLmatrix$genotype,
+                           genetic.distances=positions,
+                           distances="physical",
+                           LDmeasure="D",
+                           title="Pairwise LD with D'",
+                           add.map=TRUE, add.key=TRUE,
+                           geneMapLocation=0.15,
+                           SNP.name=c("87493148"),
+                           color=NULL, newpage=TRUE,
+                           name="ldheatmap")
+View(allheatmapr$LDmatrix)
+View(allheatmapD$LDmatrix)
+```
+
+
+
+
+
+```{r}
+library(vcfR)
+library(ape)
+library(phangorn)
+library(ade4)
+```
+
+
+#read in data
+```{r}
+VER <- read.vcfR("pyg_UCP1.vcf.gz", verbose = TRUE, nrows=285)
+
+VERdna <- vcfR2DNAbin(VER)
+VERdna
+dist <- dist.dna(VERdna, model = "K80")
+length(dist)
+heatmap <- as.data.frame(as.matrix(dist))
+table.paint(heatmap, cleg=0, clabel.row=.5, clabel.col=.5)
+VERtree <- nj(dist)
+class(VERtree) #tree should be class "phylo"
+```
+
+#Just a quick sneak peek at our tree before we plot it
+```{r}
+summary.phylo(VERtree)
+plot(VERtree, cex=0.5)
+```
+
+
+#What to do here?
+#Tree 1
+#CLM <- read.vcfR("CLM.vcf", verbose = TRUE, nrows=206)
+#CLMdna <- vcfR2DNAbin(CLM)
+#CLMdna
+#D <- dist.dna(CLMdna, model = "K80")
+#length(D)
+#CLMtree <- nj(D)
+#class(CLMtree)
+#Tree 2
+#MXL <- read.vcfR("MXL.vcf", verbose = TRUE, nrows=206)
+#MXLdna <- vcfR2DNAbin(MXL)
+#MXLdna
+#D <- dist.dna(MXLdna, model = "K80")
+#length(D)
+#MXLtree <- nj(D)
+#class(MXLtree)
+#samerica <- c(PELtree, CLMtree, MXLtree)
+#class(samerica)
+
+#densitree <- densiTree(samerica, type="phylogram", col=c("red", "green", "blue"), width=2, jitter=list(amount=.3, random=FALSE), alpha=1)
+
+
+##Stats
+
+```{r}
+install.packages("PopGenome")
+
+library(vcfR)
+library(PopGenome)
+library(pegas)
+```
+
+#mkdir VER
+#cp UCP1_Vervet_ALL.vcf VER/UCP1_Vervet_ALL.vcf
+
+```{r}
+VERgenome <- readData("VER", format = "VCF")
+VERgenome
+VER <- read.vcfR("VER/pyg_UCP1.vcf", verbose=T, nrows=284)
+VERdna <- vcfR2DNAbin(VER)
+VERdna
+neut <- neutrality.stats(VERgenome)
+get.neutrality(neut)
+neut@Fu.Li.F
+neut@Fu.Li.D
+neut@Tajima.D
+tajima <- tajima.test(VERdna)
+tajima
+```
+
+
