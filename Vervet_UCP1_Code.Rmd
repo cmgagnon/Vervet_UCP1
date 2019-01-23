@@ -10,6 +10,13 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## R Markdown for Chlorocebus pygerythrus
 
+#Unix code for obtaining UCP1 region 
+```{bash}
+tabix -h  163_201701_UG_vervet_monkey_SNPs_all_chrom_beagle_shapeit.vcf.gz CAE7:87492140-87502530 | bgzip -c > ALL_UPC1.vcf.gz
+vcf-subset -c pyg.samples.list ALL_UPC1.vcf.gz | bgzip  -c > pyg_UCP1.vcf.gz
+zgrep -v "^##" pyg_UCP1.vcf.gz | cut -f1-3 > loci.txt 
+```
+
 ##Hardy-Weinberg Equilibrium
 
 #Packages
@@ -17,12 +24,13 @@ knitr::opts_chunk$set(echo = TRUE)
 install.packages("vcfR")
 install.packages("pegas")
 
-library(vcfR)
-library(pegas)
 ```
 
-#Output
+#HWE Output
 ```{r}
+library(vcfR)
+library(pegas)
+
 ALL <- read.vcfR("pyg_UCP1.vcf.gz", verbose = TRUE)
 pegas.ALL <- vcfR2genind(ALL, sep = "[|/]")
 HWE <- hw.test(pegas.ALL, B = 0)
@@ -30,18 +38,26 @@ HWE
 ```
 
 ##Linkage Disequilibrium
-
+if (!requireNamespace("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+BiocManager::install("snpStats", version = "3.8")
+a
 #Packages
 ```{r}
 install.packages("LDheatmap")
-install.packages("snpStats")
+install.packages("VariantAnnotation")
+if (!requireNamespace("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+BiocManager::install("snpStats", version = "3.8")
+#install.packages("snpStats")
 
-library(snpStats)
-library(VariantAnnotation)
-library(LDheatmap)
 ```
 
 ```{r}
+library(snpStats)
+library(VariantAnnotation)
+library(LDheatmap)
+
 vcfbig <- readVcf("pyg_UCP1.vcf.gz", "hg19")
 ALLmatrix <- genotypeToSnpMatrix(vcfbig)
 ALLmatrix
@@ -221,5 +237,8 @@ neut@Tajima.D
 tajima <- tajima.test(VERdna)
 tajima
 ```
+
+
+
 
 
