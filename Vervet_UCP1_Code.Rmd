@@ -46,7 +46,11 @@ git clone https://github.com/broadinstitute/picard.git
 java -jar build/libs/picard.jar
 java -jar picard.jar CreateSequenceDictionary REFERENCE=Vervet_UCP1.fasta OUTPUT=Vervet_UCP1.dict #create dictionary file
 
-tabix -p vcf VBOA1003.vcf.gz #generate index file
+for word in $(cat pyg.samples.list)
+do
+tabix -p vcf $word.vcf.gz #generate index file
+done
+
 
 #failed attempts to troubleshoot
 ./picard FixVcfHeader      I=input.vcf      O=fixed.vcf
