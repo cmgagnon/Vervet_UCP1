@@ -10,23 +10,67 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## R Markdown for Chlorocebus pygerythrus
 
-#Unix code for obtaining UCP1 region 
+###Coordinates
+Human UCP1 coordinates 
+chr4:140,556,520-140,565,891
+Human UCP1 Coordinates including promoter region:
+chr4:140,554,000-140,570,000
+Vervet UCP1 coordinates including promoter
+CAE7:87,486,745-87,503,719
+
+###Unix code for obtaining UCP1 region 
 ```{bash}
-tabix -h  163_201701_UG_vervet_monkey_SNPs_all_chrom_beagle_shapeit.vcf.gz CAE7:87492140-87502530 | bgzip -c > ALL_UPC1.vcf.gz
-vcf-subset -c pyg.samples.list ALL_UPC1.vcf.gz | bgzip  -c > pyg_UCP1.vcf.gz
-zgrep -v "^##" pyg_UCP1.vcf.gz | cut -f1-3 > loci.txt 
+module load tabix
+module load vcftools
+
+tabix -h  163_201701_UG_vervet_monkey_SNPs_all_chrom_beagle_shapeit.vcf.gz CAE7:87486745-87503719 | bgzip -c > ALL_UPC1.vcf.gz #isolate UCP1 region for all samples
+
+vcf-subset -c pyg.samples.list ALL_UPC1.vcf.gz | bgzip  -c > pyg_UCP1.vcf.gz #isolate only pygerethrus samples
+
+zgrep -v "^##" pyg_UCP1.vcf.gz | cut -f1-3 > loci.txt #Get list of variant sites for LD
+
+bcftools view -c1 -Oz -s VBOA1003 -o VBOA1003.vcf.gz pyg_UCP1.vcf.gz #create new vcf for each sample
 ```
 
-##Hardy-Weinberg Equilibrium
 
-#Packages
+###GATK code
+```{bash}
+module load java/1.8.0_151
+module load python3/3.6.4
+module load gatk/4.1.0.0
+module load samtools
+
+samtools faidx Vervet_UCP1.fasta #index fasta file
+
+git clone https://github.com/broadinstitute/picard.git
+java -jar build/libs/picard.jar
+java -jar picard.jar CreateSequenceDictionary REFERENCE=Vervet_UCP1.fasta OUTPUT=Vervet_UCP1.dict #create dictionary file
+
+tabix -p vcf VBOA1003.vcf.gz #generate index file
+
+#failed attempts to troubleshoot
+./picard FixVcfHeader      I=input.vcf      O=fixed.vcf
+./picard FixVcfHeader I=VBOA1003.vcf.gz O=VBOA1003_Fixed.vcf.gz
+java -jar picard.jar FixVcfHeader I=VBOA1003.vcf.gz O=VBOA1003_Fixed.vcf.gz
+java -jar picard.jar FixVcfHeader -I VBOA1003.vcf.gz -O VBOA1003_Fixed.vcf.gz
+./gatk IndexFeatureFile      -F VBOA1003.vcf.gz
+
+#Auctual Code for GATK
+./gatk FastaAlternateReferenceMaker -R Vervet_UCP1.fasta -O VBOA1003.fasta -V VBOA1003.vcf.gz 
+
+```
+
+
+###Hardy-Weinberg Equilibrium
+
+Packages:
 ```{r}
 install.packages("vcfR")
 install.packages("pegas")
 
 ```
 
-#HWE Output
+Analysis:
 ```{r}
 library(vcfR)
 library(pegas)
@@ -37,12 +81,9 @@ HWE <- hw.test(pegas.ALL, B = 0)
 HWE
 ```
 
-##Linkage Disequilibrium
-if (!requireNamespace("BiocManager", quietly = TRUE))
-    install.packages("BiocManager")
-BiocManager::install("snpStats", version = "3.8")
-a
-#Packages
+###Linkage Disequilibrium
+
+Packages:
 ```{r}
 install.packages("LDheatmap")
 install.packages("VariantAnnotation")
@@ -53,6 +94,7 @@ BiocManager::install("snpStats", version = "3.8")
 
 ```
 
+Analysis:
 ```{r}
 library(snpStats)
 library(VariantAnnotation)
@@ -67,7 +109,7 @@ head(LD)
 LD
 ```
 
-
+Heat Mapper:
 ```{r}
 cols = colorRampPalette(c("yellow", "red"))(10)
 image(LD, lwd = 0, cuts= 9, col.regions=cols, colorkey=TRUE)
@@ -154,10 +196,9 @@ View(allheatmapr$LDmatrix)
 View(allheatmapD$LDmatrix)
 ```
 
+###Phylogenetic Analysis
 
-
-
-
+Packages:
 ```{r}
 library(vcfR)
 library(ape)
@@ -166,7 +207,7 @@ library(ade4)
 ```
 
 
-#read in data
+Read in data:
 ```{r}
 VER <- read.vcfR("pyg_UCP1.vcf.gz", verbose = TRUE, nrows=285)
 
@@ -187,7 +228,8 @@ plot(VERtree, cex=0.5)
 ```
 
 
-#What to do here?
+What to do here?
+```{r}
 #Tree 1
 #CLM <- read.vcfR("CLM.vcf", verbose = TRUE, nrows=206)
 #CLMdna <- vcfR2DNAbin(CLM)
@@ -208,10 +250,11 @@ plot(VERtree, cex=0.5)
 #class(samerica)
 
 #densitree <- densiTree(samerica, type="phylogram", col=c("red", "green", "blue"), width=2, jitter=list(amount=.3, random=FALSE), alpha=1)
+```
 
+##Statistics
 
-##Stats
-
+Packages:
 ```{r}
 install.packages("PopGenome")
 
@@ -220,9 +263,11 @@ library(PopGenome)
 library(pegas)
 ```
 
-#mkdir VER
-#cp UCP1_Vervet_ALL.vcf VER/UCP1_Vervet_ALL.vcf
+Bash code:
+mkdir VER
+cp UCP1_Vervet_ALL.vcf VER/UCP1_Vervet_ALL.vcf
 
+Analysis:
 ```{r}
 VERgenome <- readData("VER", format = "VCF")
 VERgenome
@@ -237,8 +282,5 @@ neut@Tajima.D
 tajima <- tajima.test(VERdna)
 tajima
 ```
-
-
-
 
 
