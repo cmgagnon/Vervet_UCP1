@@ -1,0 +1,234 @@
+module load java/1.8.0_151
+module load python3/3.6.4
+module load gatk/4.1.0.0
+export PATH=$PATH:/Users/christiangagnon/Desktop/gatk-4.1.0.0/bwa-0.7.17 
+samtools faidx Vervet_UCP1.fasta
+git clone https://github.com/broadinstitute/picard.git
+java -jar build/libs/picard.jar
+java -jar picard.jar CreateSequenceDictionary REFERENCE=Vervet_UCP1.fasta OUTPUT=Vervet_UCP1.dict
+tabix -p vcf VBOA1003.vcf.gz
+./picard FixVcfHeader      I=input.vcf      O=fixed.vcf
+./picard FixVcfHeader I=VBOA1003.vcf.gz O=VBOA1003_Fixed.vcf.gz
+java -jar picard.jar FixVcfHeader I=VBOA1003.vcf.gz O=VBOA1003_Fixed.vcf.gz
+java -jar picard.jar FixVcfHeader -I VBOA1003.vcf.gz -O VBOA1003_Fixed.vcf.gz
+./gatk IndexFeatureFile      -F VBOA1003.vcf.gz
+./gatk FastaAlternateReferenceMaker -R Vervet_UCP1.fasta -O VBOA1003.fasta -V VBOA1003.vcf.gz 
+java -jar GenomeAnalysisTK.jar \ -T FastaAlternateReferenceMaker \ -R Vervet_UCP1.fasta \ -o VBOA1005.fasta \ -V VBOA1005.vcf.gz |
+java -jar GenomeAnalysisTK.jar \ -T FastaAlternateReferenceMaker \ -R Vervet_UCP1.fasta \ -o VSAA2010.fasta \ -V VSAA2010.vcf.gz |
+java -jar GenomeAnalysisTK.jar \ -T FastaAlternateReferenceMaker \ -R Vervet_UCP1.fasta \ -o VSAA2015.fasta \ -V VSAA2015.vcf.gz |
+java -jar GenomeAnalysisTK.jar \ -T FastaAlternateReferenceMaker \ -R Vervet_UCP1.fasta \ -o VSAA2020.fasta \ -V VSAA2020.vcf.gz |
+java -jar GenomeAnalysisTK.jar \ -T FastaAlternateReferenceMaker \ -R Vervet_UCP1.fasta \ -o VSAB1003.fasta \ -V VSAB1003.vcf.gz |
+java -jar GenomeAnalysisTK.jar \ -T FastaAlternateReferenceMaker \ -R Vervet_UCP1.fasta \ -o VSAB2009.fasta \ -V VSAB2009.vcf.gz |
+java -jar GenomeAnalysisTK.jar \ -T FastaAlternateReferenceMaker \ -R Vervet_UCP1.fasta \ -o VSAB2010.fasta \ -V VSAB2010.vcf.gz |
+java -jar GenomeAnalysisTK.jar \ -T FastaAlternateReferenceMaker \ -R Vervet_UCP1.fasta \ -o VSAB2011.fasta \ -V VSAB2011.vcf.gz |
+java -jar GenomeAnalysisTK.jar \ -T FastaAlternateReferenceMaker \ -R Vervet_UCP1.fasta \ -o VSAB2012.fasta \ -V VSAB2012.vcf.gz |
+java -jar GenomeAnalysisTK.jar \ -T FastaAlternateReferenceMaker \ -R Vervet_UCP1.fasta \ -o VSAB2017.fasta \ -V VSAB2017.vcf.gz |
+java -jar GenomeAnalysisTK.jar \ -T FastaAlternateReferenceMaker \ -R Vervet_UCP1.fasta \ -o VSAB2023.fasta \ -V VSAB2023.vcf.gz |
+java -jar GenomeAnalysisTK.jar \ -T FastaAlternateReferenceMaker \ -R Vervet_UCP1.fasta \ -o VSAB3001.fasta \ -V VSAB3001.vcf.gz |
+java -jar GenomeAnalysisTK.jar \ -T FastaAlternateReferenceMaker \ -R Vervet_UCP1.fasta \ -o VSAB3004.fasta \ -V VSAB3004.vcf.gz |
+java -jar GenomeAnalysisTK.jar \ -T FastaAlternateReferenceMaker \ -R Vervet_UCP1.fasta \ -o VSAB5004.fasta \ -V VSAB5004.vcf.gz |
+java -jar GenomeAnalysisTK.jar \ -T FastaAlternateReferenceMaker \ -R Vervet_UCP1.fasta \ -o VSAB5005.fasta \ -V VSAB5005.vcf.gz |
+java -jar GenomeAnalysisTK.jar \ -T FastaAlternateReferenceMaker \ -R Vervet_UCP1.fasta \ -o VSAC1004.fasta \ -V VSAC1004.vcf.gz |
+java -jar GenomeAnalysisTK.jar \ -T FastaAlternateReferenceMaker \ -R Vervet_UCP1.fasta \ -o VSAC1012.fasta \ -V VSAC1012.vcf.gz |
+java -jar GenomeAnalysisTK.jar \ -T FastaAlternateReferenceMaker \ -R Vervet_UCP1.fasta \ -o VSAC1014.fasta \ -V VSAC1014.vcf.gz |
+java -jar GenomeAnalysisTK.jar \ -T FastaAlternateReferenceMaker \ -R Vervet_UCP1.fasta \ -o VSAC1015.fasta \ -V VSAC1015.vcf.gz |
+java -jar GenomeAnalysisTK.jar \ -T FastaAlternateReferenceMaker \ -R Vervet_UCP1.fasta \ -o VSAC1016.fasta \ -V VSAC1016.vcf.gz | 
+java -jar GenomeAnalysisTK.jar \ -T FastaAlternateReferenceMaker \ -R Vervet_UCP1.fasta \ -o VSAD1003.fasta \ -V VSAD1003.vcf.gz |
+java -jar GenomeAnalysisTK.jar \ -T FastaAlternateReferenceMaker \ -R Vervet_UCP1.fasta \ -o VSAE2005.fasta \ -V VSAE2005.vcf.gz |
+java -jar GenomeAnalysisTK.jar \ -T FastaAlternateReferenceMaker \ -R Vervet_UCP1.fasta \ -o VSAE2009.fasta \ -V VSAE2009.vcf.gz |
+java -jar GenomeAnalysisTK.jar \ -T FastaAlternateReferenceMaker \ -R Vervet_UCP1.fasta \ -o VSAE2011.fasta \ -V VSAE2011.vcf.gz |
+java -jar GenomeAnalysisTK.jar \ -T FastaAlternateReferenceMaker \ -R Vervet_UCP1.fasta \ -o VSAE3001.fasta \ -V VSAE3001.vcf.gz |
+java -jar GenomeAnalysisTK.jar \ -T FastaAlternateReferenceMaker \ -R Vervet_UCP1.fasta \ -o VSAE3002.fasta \ -V VSAE3002.vcf.gz |
+java -jar GenomeAnalysisTK.jar \ -T FastaAlternateReferenceMaker \ -R Vervet_UCP1.fasta \ -o VSAE3003.fasta \ -V VSAE3003.vcf.gz |
+java -jar GenomeAnalysisTK.jar \ -T FastaAlternateReferenceMaker \ -R Vervet_UCP1.fasta \ -o VSAF1004.fasta \ -V VSAF1004.vcf.gz |
+java -jar GenomeAnalysisTK.jar \ -T FastaAlternateReferenceMaker \ -R Vervet_UCP1.fasta \ -o VSAF1009.fasta \ -V VSAF1009.vcf.gz |
+java -jar GenomeAnalysisTK.jar \ -T FastaAlternateReferenceMaker \ -R Vervet_UCP1.fasta \ -o VSAF1011.fasta \ -V VSAF1011.vcf.gz |
+java -jar GenomeAnalysisTK.jar \ -T FastaAlternateReferenceMaker \ -R Vervet_UCP1.fasta \ -o VSAF1012.fasta \ -V VSAF1012.vcf.gz |
+java -jar GenomeAnalysisTK.jar \ -T FastaAlternateReferenceMaker \ -R Vervet_UCP1.fasta \ -o VSAF1015.fasta \ -V VSAF1015.vcf.gz |
+java -jar GenomeAnalysisTK.jar \ -T FastaAlternateReferenceMaker \ -R Vervet_UCP1.fasta \ -o VSAG2001.fasta \ -V VSAG2001.vcf.gz |
+java -jar GenomeAnalysisTK.jar \ -T FastaAlternateReferenceMaker \ -R Vervet_UCP1.fasta \ -o VSAG2003.fasta \ -V VSAG2003.vcf.gz |
+java -jar GenomeAnalysisTK.jar \ -T FastaAlternateReferenceMaker \ -R Vervet_UCP1.fasta \ -o VSAG2005.fasta \ -V VSAG2005.vcf.gz |
+java -jar GenomeAnalysisTK.jar \ -T FastaAlternateReferenceMaker \ -R Vervet_UCP1.fasta \ -o VSAH1001.fasta \ -V VSAH1001.vcf.gz |
+java -jar GenomeAnalysisTK.jar \ -T FastaAlternateReferenceMaker \ -R Vervet_UCP1.fasta \ -o VSAI3005.fasta \ -V VSAI3005.vcf.gz |
+java -jar GenomeAnalysisTK.jar \ -T FastaAlternateReferenceMaker \ -R Vervet_UCP1.fasta \ -o VSAJ2008.fasta \ -V VSAJ2008.vcf.gz |
+java -jar GenomeAnalysisTK.jar \ -T FastaAlternateReferenceMaker \ -R Vervet_UCP1.fasta \ -o VSAK3004.fasta \ -V VSAK3004.vcf.gz |
+java -jar GenomeAnalysisTK.jar \ -T FastaAlternateReferenceMaker \ -R Vervet_UCP1.fasta \ -o VSAL1001.fasta \ -V VSAL1001.vcf.gz |
+java -jar GenomeAnalysisTK.jar \ -T FastaAlternateReferenceMaker \ -R Vervet_UCP1.fasta \ -o VSAL2002.fasta \ -V VSAL2002.vcf.gz |
+java -jar GenomeAnalysisTK.jar \ -T FastaAlternateReferenceMaker \ -R Vervet_UCP1.fasta \ -o VSAL3005.fasta \ -V VSAL3005.vcf.gz |
+java -jar GenomeAnalysisTK.jar \ -T FastaAlternateReferenceMaker \ -R Vervet_UCP1.fasta \ -o VSAL4002.fasta \ -V VSAL4002.vcf.gz |
+java -jar GenomeAnalysisTK.jar \ -T FastaAlternateReferenceMaker \ -R Vervet_UCP1.fasta \ -o VSAL5001.fasta \ -V VSAL5001.vcf.gz |
+java -jar GenomeAnalysisTK.jar \ -T FastaAlternateReferenceMaker \ -R Vervet_UCP1.fasta \ -o VSAM0021.fasta \ -V VSAM0021.vcf.gz |
+java -jar GenomeAnalysisTK.jar \ -T FastaAlternateReferenceMaker \ -R Vervet_UCP1.fasta \ -o VSAM1003.fasta \ -V VSAM1003.vcf.gz |
+java -jar GenomeAnalysisTK.jar \ -T FastaAlternateReferenceMaker \ -R Vervet_UCP1.fasta \ -o VSAM2001.fasta \ -V VSAM2001.vcf.gz |
+java -jar GenomeAnalysisTK.jar \ -T FastaAlternateReferenceMaker \ -R Vervet_UCP1.fasta \ -o VSAM3001.fasta \ -V VSAM3001.vcf.gz |
+java -jar GenomeAnalysisTK.jar \ -T FastaAlternateReferenceMaker \ -R Vervet_UCP1.fasta \ -o VSAM4001.fasta \ -V VSAM4001.vcf.gz |
+java -jar GenomeAnalysisTK.jar \ -T FastaAlternateReferenceMaker \ -R Vervet_UCP1.fasta \ -o VSAM5007.fasta \ -V VSAM5007.vcf.gz |
+
+OUTPUT:
+Using GATK jar /Users/christiangagnon/Desktop/gatk-4.1.0.0/gatk-package-4.1.0.0-local.jar
+Running:
+    java -Dsamjdk.use_async_io_read_samtools=false -Dsamjdk.use_async_io_write_samtools=true -Dsamjdk.use_async_io_write_tribble=false -Dsamjdk.compression_level=2 -jar /Users/christiangagnon/Desktop/gatk-4.1.0.0/gatk-package-4.1.0.0-local.jar FastaAlternateReferenceMaker -R Vervet_UCP1.fasta -O VBOA1003.fasta -V VBOA1003.vcf.gz
+00:31:30.878 INFO  NativeLibraryLoader - Loading libgkl_compression.dylib from jar:file:/Users/christiangagnon/Desktop/gatk-4.1.0.0/gatk-package-4.1.0.0-local.jar!/com/intel/gkl/native/libgkl_compression.dylib
+Feb 22, 2019 12:31:31 AM shaded.cloud_nio.com.google.auth.oauth2.ComputeEngineCredentials runningOnComputeEngine
+WARNING: Failed to detect whether we are running on Google Compute Engine.
+java.net.ConnectException: Host is down (connect failed)
+	at java.net.PlainSocketImpl.socketConnect(Native Method)
+	at java.net.AbstractPlainSocketImpl.doConnect(AbstractPlainSocketImpl.java:350)
+	at java.net.AbstractPlainSocketImpl.connectToAddress(AbstractPlainSocketImpl.java:206)
+	at java.net.AbstractPlainSocketImpl.connect(AbstractPlainSocketImpl.java:188)
+	at java.net.SocksSocketImpl.connect(SocksSocketImpl.java:392)
+	at java.net.Socket.connect(Socket.java:589)
+	at sun.net.NetworkClient.doConnect(NetworkClient.java:175)
+	at sun.net.www.http.HttpClient.openServer(HttpClient.java:463)
+	at sun.net.www.http.HttpClient.openServer(HttpClient.java:558)
+	at sun.net.www.http.HttpClient.<init>(HttpClient.java:242)
+	at sun.net.www.http.HttpClient.New(HttpClient.java:339)
+	at sun.net.www.http.HttpClient.New(HttpClient.java:357)
+	at sun.net.www.protocol.http.HttpURLConnection.getNewHttpClient(HttpURLConnection.java:1220)
+	at sun.net.www.protocol.http.HttpURLConnection.plainConnect0(HttpURLConnection.java:1156)
+	at sun.net.www.protocol.http.HttpURLConnection.plainConnect(HttpURLConnection.java:1050)
+	at sun.net.www.protocol.http.HttpURLConnection.connect(HttpURLConnection.java:984)
+	at shaded.cloud_nio.com.google.api.client.http.javanet.NetHttpRequest.execute(NetHttpRequest.java:104)
+	at shaded.cloud_nio.com.google.api.client.http.HttpRequest.execute(HttpRequest.java:981)
+	at shaded.cloud_nio.com.google.auth.oauth2.ComputeEngineCredentials.runningOnComputeEngine(ComputeEngineCredentials.java:210)
+	at shaded.cloud_nio.com.google.auth.oauth2.DefaultCredentialsProvider.tryGetComputeCredentials(DefaultCredentialsProvider.java:290)
+	at shaded.cloud_nio.com.google.auth.oauth2.DefaultCredentialsProvider.getDefaultCredentialsUnsynchronized(DefaultCredentialsProvider.java:207)
+	at shaded.cloud_nio.com.google.auth.oauth2.DefaultCredentialsProvider.getDefaultCredentials(DefaultCredentialsProvider.java:124)
+	at shaded.cloud_nio.com.google.auth.oauth2.GoogleCredentials.getApplicationDefault(GoogleCredentials.java:127)
+	at shaded.cloud_nio.com.google.auth.oauth2.GoogleCredentials.getApplicationDefault(GoogleCredentials.java:100)
+	at com.google.cloud.ServiceOptions.defaultCredentials(ServiceOptions.java:304)
+	at com.google.cloud.ServiceOptions.<init>(ServiceOptions.java:278)
+	at com.google.cloud.storage.StorageOptions.<init>(StorageOptions.java:83)
+	at com.google.cloud.storage.StorageOptions.<init>(StorageOptions.java:31)
+	at com.google.cloud.storage.StorageOptions$Builder.build(StorageOptions.java:78)
+	at org.broadinstitute.hellbender.utils.gcs.BucketUtils.setGlobalNIODefaultOptions(BucketUtils.java:353)
+	at org.broadinstitute.hellbender.cmdline.CommandLineProgram.instanceMainPostParseArgs(CommandLineProgram.java:182)
+	at org.broadinstitute.hellbender.cmdline.CommandLineProgram.instanceMain(CommandLineProgram.java:210)
+	at org.broadinstitute.hellbender.Main.runCommandLineProgram(Main.java:162)
+	at org.broadinstitute.hellbender.Main.mainEntry(Main.java:205)
+	at org.broadinstitute.hellbender.Main.main(Main.java:291)
+
+Feb 22, 2019 12:31:31 AM shaded.cloud_nio.com.google.auth.oauth2.ComputeEngineCredentials runningOnComputeEngine
+WARNING: Failed to detect whether we are running on Google Compute Engine.
+java.net.ConnectException: Host is down (connect failed)
+	at java.net.PlainSocketImpl.socketConnect(Native Method)
+	at java.net.AbstractPlainSocketImpl.doConnect(AbstractPlainSocketImpl.java:350)
+	at java.net.AbstractPlainSocketImpl.connectToAddress(AbstractPlainSocketImpl.java:206)
+	at java.net.AbstractPlainSocketImpl.connect(AbstractPlainSocketImpl.java:188)
+	at java.net.SocksSocketImpl.connect(SocksSocketImpl.java:392)
+	at java.net.Socket.connect(Socket.java:589)
+	at sun.net.NetworkClient.doConnect(NetworkClient.java:175)
+	at sun.net.www.http.HttpClient.openServer(HttpClient.java:463)
+	at sun.net.www.http.HttpClient.openServer(HttpClient.java:558)
+	at sun.net.www.http.HttpClient.<init>(HttpClient.java:242)
+	at sun.net.www.http.HttpClient.New(HttpClient.java:339)
+	at sun.net.www.http.HttpClient.New(HttpClient.java:357)
+	at sun.net.www.protocol.http.HttpURLConnection.getNewHttpClient(HttpURLConnection.java:1220)
+	at sun.net.www.protocol.http.HttpURLConnection.plainConnect0(HttpURLConnection.java:1156)
+	at sun.net.www.protocol.http.HttpURLConnection.plainConnect(HttpURLConnection.java:1050)
+	at sun.net.www.protocol.http.HttpURLConnection.connect(HttpURLConnection.java:984)
+	at shaded.cloud_nio.com.google.api.client.http.javanet.NetHttpRequest.execute(NetHttpRequest.java:104)
+	at shaded.cloud_nio.com.google.api.client.http.HttpRequest.execute(HttpRequest.java:981)
+	at shaded.cloud_nio.com.google.auth.oauth2.ComputeEngineCredentials.runningOnComputeEngine(ComputeEngineCredentials.java:210)
+	at shaded.cloud_nio.com.google.auth.oauth2.DefaultCredentialsProvider.tryGetComputeCredentials(DefaultCredentialsProvider.java:290)
+	at shaded.cloud_nio.com.google.auth.oauth2.DefaultCredentialsProvider.getDefaultCredentialsUnsynchronized(DefaultCredentialsProvider.java:207)
+	at shaded.cloud_nio.com.google.auth.oauth2.DefaultCredentialsProvider.getDefaultCredentials(DefaultCredentialsProvider.java:124)
+	at shaded.cloud_nio.com.google.auth.oauth2.GoogleCredentials.getApplicationDefault(GoogleCredentials.java:127)
+	at shaded.cloud_nio.com.google.auth.oauth2.GoogleCredentials.getApplicationDefault(GoogleCredentials.java:100)
+	at com.google.cloud.ServiceOptions.defaultCredentials(ServiceOptions.java:304)
+	at com.google.cloud.ServiceOptions.<init>(ServiceOptions.java:278)
+	at com.google.cloud.storage.StorageOptions.<init>(StorageOptions.java:83)
+	at com.google.cloud.storage.StorageOptions.<init>(StorageOptions.java:31)
+	at com.google.cloud.storage.StorageOptions$Builder.build(StorageOptions.java:78)
+	at org.broadinstitute.hellbender.utils.gcs.BucketUtils.setGlobalNIODefaultOptions(BucketUtils.java:353)
+	at org.broadinstitute.hellbender.cmdline.CommandLineProgram.instanceMainPostParseArgs(CommandLineProgram.java:182)
+	at org.broadinstitute.hellbender.cmdline.CommandLineProgram.instanceMain(CommandLineProgram.java:210)
+	at org.broadinstitute.hellbender.Main.runCommandLineProgram(Main.java:162)
+	at org.broadinstitute.hellbender.Main.mainEntry(Main.java:205)
+	at org.broadinstitute.hellbender.Main.main(Main.java:291)
+
+Feb 22, 2019 12:31:31 AM shaded.cloud_nio.com.google.auth.oauth2.ComputeEngineCredentials runningOnComputeEngine
+WARNING: Failed to detect whether we are running on Google Compute Engine.
+java.net.ConnectException: Host is down (connect failed)
+	at java.net.PlainSocketImpl.socketConnect(Native Method)
+	at java.net.AbstractPlainSocketImpl.doConnect(AbstractPlainSocketImpl.java:350)
+	at java.net.AbstractPlainSocketImpl.connectToAddress(AbstractPlainSocketImpl.java:206)
+	at java.net.AbstractPlainSocketImpl.connect(AbstractPlainSocketImpl.java:188)
+	at java.net.SocksSocketImpl.connect(SocksSocketImpl.java:392)
+	at java.net.Socket.connect(Socket.java:589)
+	at sun.net.NetworkClient.doConnect(NetworkClient.java:175)
+	at sun.net.www.http.HttpClient.openServer(HttpClient.java:463)
+	at sun.net.www.http.HttpClient.openServer(HttpClient.java:558)
+	at sun.net.www.http.HttpClient.<init>(HttpClient.java:242)
+	at sun.net.www.http.HttpClient.New(HttpClient.java:339)
+	at sun.net.www.http.HttpClient.New(HttpClient.java:357)
+	at sun.net.www.protocol.http.HttpURLConnection.getNewHttpClient(HttpURLConnection.java:1220)
+	at sun.net.www.protocol.http.HttpURLConnection.plainConnect0(HttpURLConnection.java:1156)
+	at sun.net.www.protocol.http.HttpURLConnection.plainConnect(HttpURLConnection.java:1050)
+	at sun.net.www.protocol.http.HttpURLConnection.connect(HttpURLConnection.java:984)
+	at shaded.cloud_nio.com.google.api.client.http.javanet.NetHttpRequest.execute(NetHttpRequest.java:104)
+	at shaded.cloud_nio.com.google.api.client.http.HttpRequest.execute(HttpRequest.java:981)
+	at shaded.cloud_nio.com.google.auth.oauth2.ComputeEngineCredentials.runningOnComputeEngine(ComputeEngineCredentials.java:210)
+	at shaded.cloud_nio.com.google.auth.oauth2.DefaultCredentialsProvider.tryGetComputeCredentials(DefaultCredentialsProvider.java:290)
+	at shaded.cloud_nio.com.google.auth.oauth2.DefaultCredentialsProvider.getDefaultCredentialsUnsynchronized(DefaultCredentialsProvider.java:207)
+	at shaded.cloud_nio.com.google.auth.oauth2.DefaultCredentialsProvider.getDefaultCredentials(DefaultCredentialsProvider.java:124)
+	at shaded.cloud_nio.com.google.auth.oauth2.GoogleCredentials.getApplicationDefault(GoogleCredentials.java:127)
+	at shaded.cloud_nio.com.google.auth.oauth2.GoogleCredentials.getApplicationDefault(GoogleCredentials.java:100)
+	at com.google.cloud.ServiceOptions.defaultCredentials(ServiceOptions.java:304)
+	at com.google.cloud.ServiceOptions.<init>(ServiceOptions.java:278)
+	at com.google.cloud.storage.StorageOptions.<init>(StorageOptions.java:83)
+	at com.google.cloud.storage.StorageOptions.<init>(StorageOptions.java:31)
+	at com.google.cloud.storage.StorageOptions$Builder.build(StorageOptions.java:78)
+	at org.broadinstitute.hellbender.utils.gcs.BucketUtils.setGlobalNIODefaultOptions(BucketUtils.java:353)
+	at org.broadinstitute.hellbender.cmdline.CommandLineProgram.instanceMainPostParseArgs(CommandLineProgram.java:182)
+	at org.broadinstitute.hellbender.cmdline.CommandLineProgram.instanceMain(CommandLineProgram.java:210)
+	at org.broadinstitute.hellbender.Main.runCommandLineProgram(Main.java:162)
+	at org.broadinstitute.hellbender.Main.mainEntry(Main.java:205)
+	at org.broadinstitute.hellbender.Main.main(Main.java:291)
+
+00:31:31.091 INFO  FastaAlternateReferenceMaker - ------------------------------------------------------------
+00:31:31.092 INFO  FastaAlternateReferenceMaker - The Genome Analysis Toolkit (GATK) v4.1.0.0
+00:31:31.092 INFO  FastaAlternateReferenceMaker - For support and documentation go to https://software.broadinstitute.org/gatk/
+00:31:31.092 INFO  FastaAlternateReferenceMaker - Executing as christiangagnon@Christians-Air.fios-router.home on Mac OS X v10.14 x86_64
+00:31:31.092 INFO  FastaAlternateReferenceMaker - Java runtime: Java HotSpot(TM) 64-Bit Server VM v1.8.0_201-b09
+00:31:31.092 INFO  FastaAlternateReferenceMaker - Start Date/Time: February 22, 2019 12:31:30 AM EST
+00:31:31.092 INFO  FastaAlternateReferenceMaker - ------------------------------------------------------------
+00:31:31.092 INFO  FastaAlternateReferenceMaker - ------------------------------------------------------------
+00:31:31.093 INFO  FastaAlternateReferenceMaker - HTSJDK Version: 2.18.2
+00:31:31.093 INFO  FastaAlternateReferenceMaker - Picard Version: 2.18.25
+00:31:31.093 INFO  FastaAlternateReferenceMaker - HTSJDK Defaults.COMPRESSION_LEVEL : 2
+00:31:31.093 INFO  FastaAlternateReferenceMaker - HTSJDK Defaults.USE_ASYNC_IO_READ_FOR_SAMTOOLS : false
+00:31:31.093 INFO  FastaAlternateReferenceMaker - HTSJDK Defaults.USE_ASYNC_IO_WRITE_FOR_SAMTOOLS : true
+00:31:31.093 INFO  FastaAlternateReferenceMaker - HTSJDK Defaults.USE_ASYNC_IO_WRITE_FOR_TRIBBLE : false
+00:31:31.093 INFO  FastaAlternateReferenceMaker - Deflater: IntelDeflater
+00:31:31.094 INFO  FastaAlternateReferenceMaker - Inflater: IntelInflater
+00:31:31.094 INFO  FastaAlternateReferenceMaker - GCS max retries/reopens: 20
+00:31:31.094 INFO  FastaAlternateReferenceMaker - Requester pays: disabled
+00:31:31.094 INFO  FastaAlternateReferenceMaker - Initializing engine
+00:31:31.516 INFO  FeatureManager - Using codec VCFCodec to read file file:///Users/christiangagnon/Desktop/gatk-4.1.0.0/VBOA1003.vcf.gz
+00:31:31.532 INFO  FastaAlternateReferenceMaker - Shutting down engine
+[February 22, 2019 12:31:31 AM EST] org.broadinstitute.hellbender.tools.walkers.fasta.FastaAlternateReferenceMaker done. Elapsed time: 0.01 minutes.
+Runtime.totalMemory()=386400256
+htsjdk.tribble.TribbleException: Contig CAE1 does not have a length field.
+	at htsjdk.variant.vcf.VCFContigHeaderLine.getSAMSequenceRecord(VCFContigHeaderLine.java:80)
+	at htsjdk.variant.vcf.VCFHeader.getSequenceDictionary(VCFHeader.java:206)
+	at org.broadinstitute.hellbender.engine.FeatureDataSource.getSequenceDictionary(FeatureDataSource.java:390)
+	at org.broadinstitute.hellbender.engine.FeatureManager.lambda$getAllSequenceDictionaries$6(FeatureManager.java:314)
+	at java.util.stream.ReferencePipeline$3$1.accept(ReferencePipeline.java:193)
+	at java.util.Iterator.forEachRemaining(Iterator.java:116)
+	at java.util.Spliterators$IteratorSpliterator.forEachRemaining(Spliterators.java:1801)
+	at java.util.stream.AbstractPipeline.copyInto(AbstractPipeline.java:481)
+	at java.util.stream.AbstractPipeline.wrapAndCopyInto(AbstractPipeline.java:471)
+	at java.util.stream.ReduceOps$ReduceOp.evaluateSequential(ReduceOps.java:708)
+	at java.util.stream.AbstractPipeline.evaluate(AbstractPipeline.java:234)
+	at java.util.stream.ReferencePipeline.collect(ReferencePipeline.java:499)
+	at org.broadinstitute.hellbender.engine.FeatureManager.getAllSequenceDictionaries(FeatureManager.java:316)
+	at org.broadinstitute.hellbender.engine.GATKTool.validateSequenceDictionaries(GATKTool.java:668)
+	at org.broadinstitute.hellbender.engine.GATKTool.onStartup(GATKTool.java:643)
+	at org.broadinstitute.hellbender.engine.ReferenceWalker.onStartup(ReferenceWalker.java:36)
+	at org.broadinstitute.hellbender.cmdline.CommandLineProgram.runTool(CommandLineProgram.java:136)
+	at org.broadinstitute.hellbender.cmdline.CommandLineProgram.instanceMainPostParseArgs(CommandLineProgram.java:191)
+	at org.broadinstitute.hellbender.cmdline.CommandLineProgram.instanceMain(CommandLineProgram.java:210)
+	at org.broadinstitute.hellbender.Main.runCommandLineProgram(Main.java:162)
+	at org.broadinstitute.hellbender.Main.mainEntry(Main.java:205)
+	at org.broadinstitute.hellbender.Main.main(Main.java:291)
