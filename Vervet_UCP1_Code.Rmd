@@ -51,6 +51,16 @@ do
 tabix -p vcf $word.vcf.gz #generate index file
 done
 
+#Auctual Code for GATK
+
+#For all samples
+for word in $(cat pyg.samples.list)
+do
+gatk FastaAlternateReferenceMaker -R Vervet_UCP1.fasta -O $word.fasta -V $word.vcf.gz
+done
+
+#For one sample
+gatk FastaAlternateReferenceMaker -R Vervet_UCP1.fasta -O VSAA2010.fasta -V VSAA2010.vcf.gz
 
 #failed attempts to troubleshoot
 ./picard FixVcfHeader      I=input.vcf      O=fixed.vcf
@@ -58,15 +68,6 @@ done
 java -jar picard.jar FixVcfHeader I=VBOA1003.vcf.gz O=VBOA1003_Fixed.vcf.gz
 java -jar picard.jar FixVcfHeader -I VBOA1003.vcf.gz -O VBOA1003_Fixed.vcf.gz
 ./gatk IndexFeatureFile      -F VBOA1003.vcf.gz
-
-#Auctual Code for GATK
-
-for word in $(cat pyg.samples.list)
-do
-gatk FastaAlternateReferenceMaker -R Vervet_UCP1.fasta -O $word.fasta -V $word.vcf.gz
-done
-
-gatk FastaAlternateReferenceMaker -R Vervet_UCP1.fasta -O VSAA2010.fasta -V VSAA2010.vcf.gz
 
 ```
 
