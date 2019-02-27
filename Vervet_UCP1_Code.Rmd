@@ -60,7 +60,13 @@ java -jar picard.jar FixVcfHeader -I VBOA1003.vcf.gz -O VBOA1003_Fixed.vcf.gz
 ./gatk IndexFeatureFile      -F VBOA1003.vcf.gz
 
 #Auctual Code for GATK
-./gatk FastaAlternateReferenceMaker -R Vervet_UCP1.fasta -O VBOA1003.fasta -V VBOA1003.vcf.gz 
+
+for word in $(cat pyg.samples.list)
+do
+gatk FastaAlternateReferenceMaker -R Vervet_UCP1.fasta -O $word.fasta -V $word.vcf.gz
+done
+
+gatk FastaAlternateReferenceMaker -R Vervet_UCP1.fasta -O VSAA2010.fasta -V VSAA2010.vcf.gz
 
 ```
 
