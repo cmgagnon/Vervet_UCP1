@@ -25,7 +25,7 @@ module load vcftools
 
 tabix -h  163_201701_UG_vervet_monkey_SNPs_all_chrom_beagle_shapeit.vcf.gz CAE7:87486745-87503719 | bgzip -c > ALL_UPC1.vcf.gz #isolate UCP1 region for all samples
 
-vcf-subset -c pyg.samples.list ALL_UPC1.vcf.gz | bgzip  -c > pyg_UCP1.vcf.gz #isolate only pygerethrus samples
+vcf-subset -c pyg.samples.list ALL_UPC1.vcf.gz | bgzip  -c > pyg_UCP1.vcf.gz #isolate only pygerythrus samples
 
 zgrep -v "^##" pyg_UCP1.vcf.gz | cut -f1-3 > loci.txt #Get list of variant sites for LD
 
@@ -35,39 +35,110 @@ bcftools view -c1 -Oz -s VBOA1003 -o VBOA1003.vcf.gz pyg_UCP1.vcf.gz #create new
 
 ###GATK code
 ```{bash}
+#Load modules
 module load java/1.8.0_151
-module load python3/3.6.4
+module load python/3.6.2
+module load tensorflow/r1.10
 module load gatk/4.1.0.0
+module load tabix
+module load vcftools
 module load samtools
+module load bcftools
+module load picard
 
-samtools faidx Vervet_UCP1.fasta #index fasta file
+#Download reference genome
+cd /projectnb/vervpop
+mkdir ChlSab
+wget --timestamping 'ftp://hgdownload.cse.ucsc.edu/
+	goldenPath/chlSab2/bigZips/*'
+tar xvzf <file>.tar.gz #To unpack the *.tar.gz files
+gunzip <file>.fa.gz #To uncompress the fa.gz files
 
-git clone https://github.com/broadinstitute/picard.git
-java -jar build/libs/picard.jar
-java -jar picard.jar CreateSequenceDictionary REFERENCE=Vervet_UCP1.fasta OUTPUT=Vervet_UCP1.dict #create dictionary file
+#Make .fasta file for vervet chromosome 7 of the reference
+gunzip chlSab2.fa.gz
+samtools faidx chlSab2.fa chr7 > Vervet_chr7.fasta
+cd /projectnb/vervpop
+mkdir gatk
+cp Vervet_chr7.fasta /projectnb/vervpop/gatk #put a copy in the gatk directory
+cd gatk
+cd /projectnb/vervpop/gatk #new path
+picard NormalizeFasta I=Vervet_chr7.fasta O=Vervet_chr7_norm.fasta #Normalize fasta file
+samtools faidx Vervet_chr7_norm.fasta #Make index file
+picard CreateSequenceDictionary REFERENCE=Vervet_chr7_norm.fasta OUTPUT=Vervet_chr7_norm.dict #make dictionary file
 
-for word in $(cat pyg.samples.list)
+#Download vervet .vcf and index to gatk directory
+wget https://vervetmonkeygmi.blob.core.windows.net/publicationdata/163_201701_UG_vervet_monkey_SNPs_all_chrom_beagle_shapeit.vcf.gz
+wget https://vervetmonkeygmi.blob.core.windows.net/publicationdata/163_201701_UG_vervet_monkey_SNPs_all_chrom_beagle_shapeit.vcf.gz.tbi
+
+#Obtaining UCP1 region
+tabix -h  163_201701_UG_vervet_monkey_SNPs_all_chrom_beagle_shapeit.vcf.gz CAE7:87478518-87512640 | bgzip -c > ALL_UPC1.vcf.gz #isolate UCP1 region for all samples
+vcf-subset -c pyg.samples.list ALL_UPC1.vcf.gz | bgzip  -c > pyg_UCP1.vcf.gz #isolate only pygerethrus samples
+zgrep -v "^##" pyg_UCP1.vcf.gz | cut -f1-3 > loci.txt #Get list of variant sites for LD
+
+#Create list of Sample IDs for SA vervets
+zgrep -v "^##" 163_201701_UG_vervet_monkey_SNPs_all_chrom_beagle_shapeit.vcf.gz | cut -f3 > Vervet.sample.list
+grep pygerythrus vervet.population.panel | cut -f1 > pyg.samples.list
+#manually remove the two Botswana samples
+
+#Use the IDs from pyg.samples.list to make vcf for each individual 
+for word in $(cat all.sample.list)
 do
-tabix -p vcf $word.vcf.gz #generate index file
+bcftools view -c1 -Oz -s $word -o $word.vcf.gz noSA_UCP1.vcf.gz 
 done
 
-#Auctual Code for GATK
+#Format the vcf files for gatk
+gedit vcfedit7only.txt #create map file and paste this inside:
+CAE7	chr7
 
-#For all samples
+#Rename all chromosomes #loop did not work
 for word in $(cat pyg.samples.list)
 do
-gatk FastaAlternateReferenceMaker -R Vervet_UCP1.fasta -O $word.fasta -V $word.vcf.gz
+bcftools annotate --rename-chrs vcfedit7only.txt -O z -o $word_chr.vcf.gz $word.vcf.gz
 done
 
-#For one sample
-gatk FastaAlternateReferenceMaker -R Vervet_UCP1.fasta -O VSAA2010.fasta -V VSAA2010.vcf.gz
+#Add length field #loop does not work
+for word in $(cat pyg.samples.list) 
+do
+zcat $word_chr.vcf.gz | sed 's/##contig=<ID=chr7>/##contig=<ID=chr7, length=135778131>/g' | gzip -c > $word_final.gz
+done
 
-#failed attempts to troubleshoot
-./picard FixVcfHeader      I=input.vcf      O=fixed.vcf
-./picard FixVcfHeader I=VBOA1003.vcf.gz O=VBOA1003_Fixed.vcf.gz
-java -jar picard.jar FixVcfHeader I=VBOA1003.vcf.gz O=VBOA1003_Fixed.vcf.gz
-java -jar picard.jar FixVcfHeader -I VBOA1003.vcf.gz -O VBOA1003_Fixed.vcf.gz
-./gatk IndexFeatureFile      -F VBOA1003.vcf.gz
+#Make index file for each sample #already exist?
+for word in $(cat pyg.samples.list)
+do
+tabix -p vcf $word_final.vcf.gz #generate index file
+done
+
+#Second attempt at indexing
+for word in $(cat pyg.samples.list)#loop does not work
+do
+gunzip $word_final.vcf.gz
+done
+
+for word in $(cat pyg.samples.list)#loop does not work
+do
+bgzip $word_final.vcf
+done
+
+for word in $(cat pyg.samples.list)#loop does not work
+do
+gatk IndexFeatureFile -F $word_final.vcf.gz
+done
+
+
+#Run gatk FastaAlternateReferenceMaker For all samples #loop did not work?
+for word in $(cat pyg.samples.list)
+do
+gatk FastaAlternateReferenceMaker -L chr7:87486745-87503719 -R Vervet_chr7_norm.fasta -O $word.fa -V $word_final.vcf.gz
+done
+
+#Run gatk FastaAlternateReferenceMaker For one sample 
+gatk FastaAlternateReferenceMaker -L chr7:87486745-87503719 -R Vervet_chr7_norm.fasta -O output.fa -V input.vcf.gz
+
+#Combine fasta files into one multi-sample file
+cat *final.fa > pyg_UCP1_all.fasta
+
+picard NormalizeFasta I=aa_reconstruction.fasta O=aa_reconstruction_norm.fasta
+
 
 ```
 
@@ -86,10 +157,11 @@ Analysis:
 library(vcfR)
 library(pegas)
 
-ALL <- read.vcfR("pyg_UCP1.vcf.gz", verbose = TRUE)
-pegas.ALL <- vcfR2genind(ALL, sep = "[|/]")
-HWE <- hw.test(pegas.ALL, B = 0)
-HWE
+ALL <- read.vcfR("pyg_UCP1.vcf.gz", verbose = TRUE) #Read in data
+pegas.ALL <- vcfR2genind(ALL, sep = "[|/]") #Use pegas to perform analysis
+HWE <- hw.test(pegas.ALL, B = 0) #copy output to new file called HWE
+HWE #View output
+
 ```
 
 ###Linkage Disequilibrium
